@@ -1,33 +1,47 @@
 package com.example.guia5;
 
-import android.annotation.SuppressLint;
+import static androidx.core.app.ActivityCompat.startActivityForResult;
+
+
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.guia5.Entidades.Personas;
+import com.example.guia5.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PersonaAdapter extends RecyclerView.Adapter<PersonaAdapter.PersonaViewHolder> {
 
     private List<Personas> listaPersonas;
+    private Context context;
     private OnItemClickListener clickListener;
     private OnItemLongClickListener longClickListener;
+
+    public PersonaAdapter(Context context) {
+        this.context = context;
+        this.listaPersonas = new ArrayList<>();
+    }
+
+    // Interfaces para clics cortos y largos
 
     public interface OnItemClickListener {
         void onItemClick(int position);
     }
+
     public interface OnItemLongClickListener {
         void onItemLongClick(int position);
     }
 
-    public void setPersonasList(List<Personas> personas) {
-        this.listaPersonas = personas;
-        notifyDataSetChanged();
-    }
-
+    // Métodos para establecer los listeners
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.clickListener = listener;
     }
@@ -36,68 +50,55 @@ public class PersonaAdapter extends RecyclerView.Adapter<PersonaAdapter.PersonaV
         this.longClickListener = listener;
     }
 
+    public void setListaPersonas(List<Personas> lista) {
+        this.listaPersonas = lista;
+        notifyDataSetChanged();
+    }
+
     public Personas getPersonaAt(int position) {
         return listaPersonas.get(position);
     }
+
     @NonNull
     @Override
     public PersonaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_persona, parent, false);
         return new PersonaViewHolder(itemView);
     }
+
     @Override
-    public void onBindViewHolder(@NonNull PersonaViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(@NonNull PersonaViewHolder holder, int position) {
         Personas persona = listaPersonas.get(position);
         holder.tvNombre.setText("Nombre: " + persona.nombrePersona);
         holder.tvApellido.setText("Apellido: " + persona.apellidoPersona);
-        holder.tvEdad.setText("Edad: " + String.valueOf(persona.edadPersona));
+        holder.tvEdad.setText("Edad: " + persona.edadPersona);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (clickListener != null) {
-                    clickListener.onItemClick(position);
-                }
-            }
-        });
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = holder.getAdapterPosition();
-                if (clickListener != null && position != RecyclerView.NO_POSITION) {
-                    clickListener.onItemClick(position);
-                }
+        // Configurando el clic corto
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onItemClick(holder.getAdapterPosition());
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                int position = holder.getAdapterPosition();
-                if (longClickListener != null && position != RecyclerView.NO_POSITION) {
-                    longClickListener.onItemLongClick(position);
-                    return true;
-                }
-                return false;
+        // Configurando el clic largo
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                longClickListener.onItemLongClick(holder.getAdapterPosition());
             }
-        });
-
-
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (longClickListener != null) {
-                    longClickListener.onItemLongClick(position);
-                    return true;
-                }
-                return false;
-            }
+            return true;
         });
     }
+
     @Override
     public int getItemCount() {
         return listaPersonas != null ? listaPersonas.size() : 0;
     }
+
+    public void updatePersona(int position, Personas personaActualizada) {
+        listaPersonas.set(position, personaActualizada);
+        notifyItemChanged(position);
+    }
+
 
     static class PersonaViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombre;
@@ -111,6 +112,6 @@ public class PersonaAdapter extends RecyclerView.Adapter<PersonaAdapter.PersonaV
             tvEdad = itemView.findViewById(R.id.tvEdad);
         }
     }
+
+
 }
-
-

@@ -12,13 +12,17 @@ import java.util.List;
 
 @Dao
 public interface PersonaDAO {
+
     @Insert
-    void Insertar(Personas personaEntity);
+    void Insertar(Personas persona);
 
-    //Actualizar
+    @Delete
+    void Eliminar(Personas persona);
 
-    //Eliminar
+    @Update
+    void Actualizar(Personas persona);
 
-    @Query("Select * From Personas")
+    @Query("SELECT * FROM Personas")
     LiveData<List<Personas>> obtenerTodasLasePersonas();
 }
+
